@@ -18,6 +18,7 @@
     "build/*"
   ],
   "dependencies": {
+    "@types/recoil": "0.0.1",
     "preact": "^10.3.1",
     "preact-jsx-chai": "^3.0.0",
     "preact-markup": "^2.0.0",

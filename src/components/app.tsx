@@ -1,11 +1,10 @@
 import { FunctionalComponent, h } from "preact";
+import AppCanvas from "./AppCanvas";
 import { RecoilRoot } from "recoil";
-const App: FunctionalComponent = () => {
+const App: any = () => {
     return (
         <RecoilRoot>
-            <div id="app">
-                <h1>2D Breakout</h1>
-            </div>
+            <AppCanvas />
         </RecoilRoot>
     );
 };
