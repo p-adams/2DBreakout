@@ -1,0 +1,16 @@
+{
+  "name": "2dbreakout",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "serve": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^4.2.3",
+    "vite": "^2.2.3"
+  },
+  "dependencies": {
+    "lit": "^2.0.0-rc.1"
+  }
+}
