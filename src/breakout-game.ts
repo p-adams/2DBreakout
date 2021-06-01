@@ -41,9 +41,13 @@ export class BreakoutGame extends LitElement {
 
   async performUpdate() {
     await new Promise<void>((resolve) => {
-      setInterval(() => {
+      const interval = setInterval(() => {
         if (this._canvas) {
-          this.draw();
+          const gameOver = this.draw();
+          if (gameOver) {
+            document.location.reload();
+            clearInterval(interval);
+          }
         }
         return resolve();
       }, 10);
@@ -83,13 +87,21 @@ export class BreakoutGame extends LitElement {
     ) {
       BreakoutGame.dx = -BreakoutGame.dx;
     }
-    // top-bottom collision detection
-    if (
-      this.y + BreakoutGame.dy >
-        this._canvas.height - BreakoutGame.ballRadius ||
-      this.y + BreakoutGame.dy < BreakoutGame.ballRadius
-    ) {
+    if (this.y + BreakoutGame.dy < BreakoutGame.ballRadius) {
       BreakoutGame.dy = -BreakoutGame.dy;
+    } else if (
+      this.y + BreakoutGame.dy >
+      this.height - BreakoutGame.ballRadius
+    ) {
+      if (
+        this.x > this.paddleX &&
+        this.x < this.paddleX + BreakoutGame.paddleWidth
+      ) {
+        BreakoutGame.dy = -BreakoutGame.dy;
+      } else {
+        alert("Game Over");
+        return 1;
+      }
     }
 
     if (this.rightPressed) {
@@ -108,6 +120,7 @@ export class BreakoutGame extends LitElement {
 
     this.x += BreakoutGame.dx;
     this.y += BreakoutGame.dy;
+    return 0;
   }
   _handleKeydown(e: KeyboardEvent) {
     if (e.key === "Right" || e.key === "ArrowRight") {
