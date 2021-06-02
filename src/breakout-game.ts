@@ -13,6 +13,14 @@ export class BreakoutGame extends LitElement {
   static ballRadius = 10;
   static paddleHeight = 10;
   static paddleWidth = 75;
+  static brickRowCount = 3;
+  static brickColumnCount = 3;
+  static brickWidth = 75;
+  static brickHeight = 20;
+  static brickPadding = 10;
+  static brickOffsetTop = 30;
+  static brickOffsetLeft = 30;
+
   ctx: any;
   width: number = 0;
   height: number = 0;
@@ -21,6 +29,7 @@ export class BreakoutGame extends LitElement {
   paddleX: number = 0;
   rightPressed: boolean = false;
   leftPressed: boolean = false;
+  bricks: { x: number; y: number }[][] = [];
 
   constructor() {
     super();
@@ -37,6 +46,12 @@ export class BreakoutGame extends LitElement {
     this.x = this.width / 2;
     this.y = this.height - 30;
     this.paddleX = (this.width - BreakoutGame.paddleWidth) / 2;
+    for (let c = 0; c < BreakoutGame.brickColumnCount; c++) {
+      this.bricks[c] = [];
+      for (let r = 0; r < BreakoutGame.brickRowCount; r++) {
+        this.bricks[c][r] = { x: 0, y: 0 };
+      }
+    }
   }
 
   async performUpdate() {
