@@ -13,15 +13,16 @@ export class BreakoutGame extends LitElement {
   static ballRadius = 10;
   static paddleHeight = 10;
   static paddleWidth = 75;
+  // bricks
   static brickRowCount = 3;
-  static brickColumnCount = 3;
+  static brickColumnCount = 5;
   static brickWidth = 75;
   static brickHeight = 20;
   static brickPadding = 10;
   static brickOffsetTop = 30;
   static brickOffsetLeft = 30;
 
-  ctx: any;
+  ctx!: CanvasRenderingContext2D | null;
   width: number = 0;
   height: number = 0;
   x: number = 50;
@@ -70,29 +71,55 @@ export class BreakoutGame extends LitElement {
     super.performUpdate();
   }
 
+  drawBricks() {
+    for (let c = 0; c < BreakoutGame.brickColumnCount; c++) {
+      for (let r = 0; r < BreakoutGame.brickRowCount; r++) {
+        const brickX =
+          c * (BreakoutGame.brickWidth + BreakoutGame.brickPadding) +
+          BreakoutGame.brickOffsetLeft;
+        const brickY =
+          r * (BreakoutGame.brickHeight + BreakoutGame.brickPadding) +
+          BreakoutGame.brickOffsetTop;
+        this.bricks[c][r].x = brickX;
+        this.bricks[c][r].y = brickY;
+        this.ctx?.beginPath();
+        this.ctx?.rect(
+          brickX,
+          brickY,
+          BreakoutGame.brickWidth,
+          BreakoutGame.brickHeight
+        );
+        this.ctx!.fillStyle = "#0095DD";
+        this.ctx?.fill();
+        this.ctx?.closePath();
+      }
+    }
+  }
+
   drawBall() {
-    this.ctx.beginPath();
-    this.ctx.arc(this.x, this.y, BreakoutGame.ballRadius, 0, Math.PI * 2);
-    this.ctx.fillStyle = "#0095DD";
-    this.ctx.fill();
-    this.ctx.closePath();
+    this.ctx?.beginPath();
+    this.ctx?.arc(this.x, this.y, BreakoutGame.ballRadius, 0, Math.PI * 2);
+    this.ctx!.fillStyle = "#0095DD";
+    this.ctx?.fill();
+    this.ctx?.closePath();
   }
 
   drawPaddle() {
-    this.ctx.beginPath();
-    this.ctx.rect(
+    this.ctx?.beginPath();
+    this.ctx?.rect(
       this.paddleX,
       this.height - BreakoutGame.paddleHeight,
       BreakoutGame.paddleWidth,
       BreakoutGame.paddleHeight
     );
-    this.ctx.fillStyle = "#0095DD";
-    this.ctx.fill();
-    this.ctx.closePath();
+    this.ctx!.fillStyle = "#0095DD";
+    this.ctx?.fill();
+    this.ctx?.closePath();
   }
 
   draw() {
-    this.ctx.clearRect(0, 0, this.width, this.height);
+    this.ctx?.clearRect(0, 0, this.width, this.height);
+    this.drawBricks();
     this.drawBall();
     this.drawPaddle();
     // left-right collision detection
