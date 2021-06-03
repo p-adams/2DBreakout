@@ -30,7 +30,7 @@ export class BreakoutGame extends LitElement {
   paddleX: number = 0;
   rightPressed: boolean = false;
   leftPressed: boolean = false;
-  bricks: { x: number; y: number }[][] = [];
+  bricks: { x: number; y: number; status: number }[][] = [];
 
   constructor() {
     super();
@@ -50,7 +50,7 @@ export class BreakoutGame extends LitElement {
     for (let c = 0; c < BreakoutGame.brickColumnCount; c++) {
       this.bricks[c] = [];
       for (let r = 0; r < BreakoutGame.brickRowCount; r++) {
-        this.bricks[c][r] = { x: 0, y: 0 };
+        this.bricks[c][r] = { x: 0, y: 0, status: 1 };
       }
     }
   }
@@ -71,27 +71,48 @@ export class BreakoutGame extends LitElement {
     super.performUpdate();
   }
 
+  collisionDetection() {
+    for (let c = 0; c < BreakoutGame.brickColumnCount; c++) {
+      for (let r = 0; r < BreakoutGame.brickRowCount; r++) {
+        const b = this.bricks[c][r];
+        if (b.status === 1) {
+          if (
+            this.x > b.x &&
+            this.x < b.x + BreakoutGame.brickWidth &&
+            this.y > b.y &&
+            this.y < b.y + BreakoutGame.brickHeight
+          ) {
+            BreakoutGame.dy = -BreakoutGame.dy;
+            b.status = 0;
+          }
+        }
+      }
+    }
+  }
+
   drawBricks() {
     for (let c = 0; c < BreakoutGame.brickColumnCount; c++) {
       for (let r = 0; r < BreakoutGame.brickRowCount; r++) {
-        const brickX =
-          c * (BreakoutGame.brickWidth + BreakoutGame.brickPadding) +
-          BreakoutGame.brickOffsetLeft;
-        const brickY =
-          r * (BreakoutGame.brickHeight + BreakoutGame.brickPadding) +
-          BreakoutGame.brickOffsetTop;
-        this.bricks[c][r].x = brickX;
-        this.bricks[c][r].y = brickY;
-        this.ctx?.beginPath();
-        this.ctx?.rect(
-          brickX,
-          brickY,
-          BreakoutGame.brickWidth,
-          BreakoutGame.brickHeight
-        );
-        this.ctx!.fillStyle = "#0095DD";
-        this.ctx?.fill();
-        this.ctx?.closePath();
+        if (this.bricks[c][r].status === 1) {
+          const brickX =
+            c * (BreakoutGame.brickWidth + BreakoutGame.brickPadding) +
+            BreakoutGame.brickOffsetLeft;
+          const brickY =
+            r * (BreakoutGame.brickHeight + BreakoutGame.brickPadding) +
+            BreakoutGame.brickOffsetTop;
+          this.bricks[c][r].x = brickX;
+          this.bricks[c][r].y = brickY;
+          this.ctx?.beginPath();
+          this.ctx?.rect(
+            brickX,
+            brickY,
+            BreakoutGame.brickWidth,
+            BreakoutGame.brickHeight
+          );
+          this.ctx!.fillStyle = "#0095DD";
+          this.ctx?.fill();
+          this.ctx?.closePath();
+        }
       }
     }
   }
@@ -122,6 +143,7 @@ export class BreakoutGame extends LitElement {
     this.drawBricks();
     this.drawBall();
     this.drawPaddle();
+    this.collisionDetection();
     // left-right collision detection
     if (
       this.x + BreakoutGame.dx > this._canvas.width - BreakoutGame.ballRadius ||
