@@ -31,7 +31,7 @@ export class BreakoutGame extends LitElement {
   rightPressed: boolean = false;
   leftPressed: boolean = false;
   bricks: { x: number; y: number; status: number }[][] = [];
-
+  score: number = 0;
   constructor() {
     super();
   }
@@ -59,7 +59,7 @@ export class BreakoutGame extends LitElement {
     await new Promise<void>((resolve) => {
       const interval = setInterval(() => {
         if (this._canvas) {
-          const gameOver = this.draw();
+          const gameOver = this.draw(interval);
           if (gameOver) {
             document.location.reload();
             clearInterval(interval);
@@ -71,7 +71,13 @@ export class BreakoutGame extends LitElement {
     super.performUpdate();
   }
 
-  collisionDetection() {
+  drawScore() {
+    this.ctx!.font = "16px Arial";
+    this.ctx!.fillStyle = "#0095DD";
+    this.ctx?.fillText(`Score: ${this.score}`, 8, 20);
+  }
+
+  collisionDetection(interval: number) {
     for (let c = 0; c < BreakoutGame.brickColumnCount; c++) {
       for (let r = 0; r < BreakoutGame.brickRowCount; r++) {
         const b = this.bricks[c][r];
@@ -84,6 +90,15 @@ export class BreakoutGame extends LitElement {
           ) {
             BreakoutGame.dy = -BreakoutGame.dy;
             b.status = 0;
+            this.score++;
+            if (
+              this.score ===
+              BreakoutGame.brickRowCount * BreakoutGame.brickColumnCount
+            ) {
+              alert("YOU WIN!");
+              document.location.reload();
+              clearInterval(interval);
+            }
           }
         }
       }
@@ -138,12 +153,13 @@ export class BreakoutGame extends LitElement {
     this.ctx?.closePath();
   }
 
-  draw() {
+  draw(interval: number) {
     this.ctx?.clearRect(0, 0, this.width, this.height);
     this.drawBricks();
     this.drawBall();
     this.drawPaddle();
-    this.collisionDetection();
+    this.drawScore();
+    this.collisionDetection(interval);
     // left-right collision detection
     if (
       this.x + BreakoutGame.dx > this._canvas.width - BreakoutGame.ballRadius ||
