@@ -216,11 +216,18 @@ export class BreakoutGame extends LitElement {
       this.leftPressed = false;
     }
   }
+  _handleMouseMove(e: MouseEvent) {
+    const relativeX = e.clientX - this._canvas.offsetLeft;
+    if (relativeX > 0 && relativeX < this.width) {
+      this.paddleX = relativeX - BreakoutGame.paddleWidth / 2;
+    }
+  }
   render() {
     return html`<canvas
       tabindex="1"
       @keydown="${this._handleKeydown}"
       @keyup="${this._handleKeyup}"
+      @mousemove="${this._handleMouseMove}"
       width="480"
       height="320"
     ></canvas>`;
