@@ -32,6 +32,7 @@ export class BreakoutGame extends LitElement {
   leftPressed: boolean = false;
   bricks: { x: number; y: number; status: number }[][] = [];
   score: number = 0;
+  lives: number = 3;
   constructor() {
     super();
   }
@@ -69,6 +70,12 @@ export class BreakoutGame extends LitElement {
       }, 10);
     });
     super.performUpdate();
+  }
+
+  drawLives() {
+    this.ctx!.font = "16px Arial";
+    this.ctx!.fillStyle = "0095DD";
+    this.ctx?.fillText(`Lives: ${this.lives}`, this.width - 65, 20);
   }
 
   drawScore() {
@@ -158,6 +165,7 @@ export class BreakoutGame extends LitElement {
     this.drawBricks();
     this.drawBall();
     this.drawPaddle();
+    this.drawLives();
     this.drawScore();
     this.collisionDetection(interval);
     // left-right collision detection
@@ -179,8 +187,17 @@ export class BreakoutGame extends LitElement {
       ) {
         BreakoutGame.dy = -BreakoutGame.dy;
       } else {
-        alert("Game Over");
-        return 1;
+        this.lives--;
+        if (!this.lives) {
+          alert("Game Over");
+          return 1;
+        } else {
+          this.x = this.width / 2;
+          this.y = this.height - 30;
+          BreakoutGame.dx = 2;
+          BreakoutGame.dy = -2;
+          this.paddleX = (this.width - BreakoutGame.paddleWidth) / 2;
+        }
       }
     }
 
