@@ -33,6 +33,7 @@ export class BreakoutGame extends LitElement {
   bricks: { x: number; y: number; status: number }[][] = [];
   score: number = 0;
   lives: number = 3;
+  interval: number | undefined;
   constructor() {
     super();
   }
@@ -58,12 +59,12 @@ export class BreakoutGame extends LitElement {
 
   async performUpdate() {
     await new Promise<void>((resolve) => {
-      const interval = setInterval(() => {
+      this.interval = setInterval(() => {
         if (this._canvas) {
-          const gameOver = this.draw(interval);
+          const gameOver = this.draw();
           if (gameOver) {
             document.location.reload();
-            clearInterval(interval);
+            clearInterval(this.interval);
           }
         }
         return resolve();
@@ -84,7 +85,7 @@ export class BreakoutGame extends LitElement {
     this.ctx?.fillText(`Score: ${this.score}`, 8, 20);
   }
 
-  collisionDetection(interval: number) {
+  collisionDetection() {
     for (let c = 0; c < BreakoutGame.brickColumnCount; c++) {
       for (let r = 0; r < BreakoutGame.brickRowCount; r++) {
         const b = this.bricks[c][r];
@@ -104,7 +105,7 @@ export class BreakoutGame extends LitElement {
             ) {
               alert("YOU WIN!");
               document.location.reload();
-              clearInterval(interval);
+              clearInterval(this.interval);
             }
           }
         }
@@ -160,14 +161,14 @@ export class BreakoutGame extends LitElement {
     this.ctx?.closePath();
   }
 
-  draw(interval: number) {
+  draw() {
     this.ctx?.clearRect(0, 0, this.width, this.height);
     this.drawBricks();
     this.drawBall();
     this.drawPaddle();
     this.drawLives();
     this.drawScore();
-    this.collisionDetection(interval);
+    this.collisionDetection();
     // left-right collision detection
     if (
       this.x + BreakoutGame.dx > this._canvas.width - BreakoutGame.ballRadius ||
